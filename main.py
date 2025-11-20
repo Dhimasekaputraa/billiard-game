@@ -1,30 +1,21 @@
-import math
 import pygame
+import collisions
+import event
+import gamestate
+import graphics
+import config
 
-# Inisialisasi pygame
-pygame.init()
+was_closed = False
+while not was_closed:
+    game = gamestate.GameState()
+    game.start_pool()
+    events = event.events()
 
-window = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Billiard Game")
+    while not (events["closed"]):
+        events = event.events()
+        collisions.resolve_all_collisions(game.balls, game.holes, game.table_sides)
+        game.redraw_all()
 
-def main(window):
-    done = False
-    clock = pygame.time.Clock()
-    fps = 60
+    was_closed = events["closed"]
 
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-
-        # Warna background
-        window.fill((0, 0, 0))
-
-        # Update tampilan
-        pygame.display.flip()
-        clock.tick(fps)
-
-    pygame.quit()
-
-# main program
-main(window)
+pygame.quit()
