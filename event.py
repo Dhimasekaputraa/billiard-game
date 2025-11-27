@@ -23,6 +23,7 @@ def events():
             if event.key == pygame.K_ESCAPE:
                 quit = True
 
-    return {"closed": closed,
+    return {"quit_to_main_menu": quit,
+            "closed": closed,
             "clicked": pygame.mouse.get_pressed()[0],
             "mouse_pos": np.array(pygame.mouse.get_pos())}

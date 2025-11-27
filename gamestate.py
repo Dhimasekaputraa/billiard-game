@@ -7,8 +7,8 @@ import pygame
 import zope.event
 import ball
 import config
-import event
 import cue
+import event
 import graphics
 import table_sprites
 from ball import BallType
@@ -84,8 +84,11 @@ class GameState:
         self.reset_state()
         self.generate_table()
         self.set_pool_balls()
+        self.cue = cue.Cue(self.white_ball)
+        self.all_sprites.add(self.cue)
 
     def reset_state(self):
+        # game state variables
         self.current_player = Player.Player1
         self.turn_ended = True
         self.white_ball_1st_hit_is_set = False
@@ -96,9 +99,12 @@ class GameState:
         self.turn_number = 0
         self.ball_assignment = None
         self.can_move_white_ball = True
+        self.is_game_over = False
+        self.potting_8ball = {Player.Player1: False, Player.Player2: False}
         self.table_sides = []
 
     def is_behind_line_break(self):
+        # 1st break should be made from behind the separation line on the table
         return self.turn_number == 0
 
     def redraw_all(self, update=True):
@@ -119,19 +125,25 @@ class GameState:
 
     def generate_table(self):
         table_side_points = np.empty((1, 2))
+        # holes_x and holes_y holds the possible xs and ys of the table holes
+        # with a position ID in the second tuple field
+        # so the top left hole has id 1,1
         holes_x = [(config.table_margin, 1), (config.resolution[0] /
                                               2, 2), (config.resolution[0] - config.table_margin, 3)]
         holes_y = [(config.table_margin, 1),
                    (config.resolution[1] - config.table_margin, 2)]
+        # next three lines are a hack to make and arrange the hole coordinates
+        # in the correct sequence
         all_hole_positions = np.array(
             list(itertools.product(holes_y, holes_x)))
         all_hole_positions = np.fliplr(all_hole_positions)
         all_hole_positions = np.vstack(
             (all_hole_positions[:3], np.flipud(all_hole_positions[3:])))
-        
         for hole_pos in all_hole_positions:
             self.holes.add(table_sprites.Hole(hole_pos[0][0], hole_pos[1][0]))
             if hole_pos[0][1] == 2:
+                # hole_pos[0,1]=2 means x coordinate ID is 2 which means this
+                # hole is in the middle
                 offset = config.middle_hole_offset
             else:
                 offset = config.side_hole_offset
@@ -155,3 +167,42 @@ class GameState:
         self.all_sprites.add(self.table_coloring)
         self.all_sprites.add(self.holes)
         graphics.add_separation_line(self.canvas)
+
+    
+    def check_potted(self):
+        self.can_move_white_ball = False  # if white ball is potted, it will be created again and placed in the middle
+        if 0 in self.potted:
+            self.create_white_ball()
+            self.cue.target_ball = self.white_ball
+            self.potted.remove(0)
+            self.turn_over(True)
+        if 8 in self.potted:
+            if self.potting_8ball[self.current_player]:
+                self.game_over(self.current_player == Player.Player1)
+            else:
+                self.game_over(self.current_player != Player.Player1)
+
+    def check_remaining(self):
+        # a check if all striped or solid balls were potted
+        stripes_remaining = False
+        solids_remaining = False
+        for remaining_ball in self.balls:
+            if remaining_ball.number != 0 and remaining_ball.number != 8:
+                stripes_remaining = stripes_remaining or remaining_ball.ball_type == BallType.Striped
+                solids_remaining = solids_remaining or not remaining_ball.ball_type == BallType.Striped
+        ball_type_remaining = {BallType.Solid: solids_remaining, BallType.Striped: stripes_remaining}
+
+        # decides if on of the players (or both) should be potting 8ball
+        self.potting_8ball = {Player.Player1: not ball_type_remaining[self.ball_assignment[Player.Player1]],
+                              Player.Player2: not ball_type_remaining[self.ball_assignment[Player.Player2]]}
+
+    def first_collision(self, ball_combination):
+        self.white_ball_1st_hit_is_set = True
+        self.white_ball_1st_hit_8ball = ball_combination[0].number == 8 or ball_combination[1].number == 8
+        if ball_combination[0].number == 0:
+            self.white_ball_1st_hit_type = ball_combination[1].ball_type
+        else:
+            self.white_ball_1st_hit_type = ball_combination[0].ball_type
+
+    def check_pool_rules(self):
+        self.check_potted()
