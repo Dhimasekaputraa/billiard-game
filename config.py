@@ -21,29 +21,29 @@ fullscreen = False
 # fullscreen resolution can only be known after initialising the screen
 if not fullscreen:
     resolution = np.array([1000, 500])
-window_caption = "Pool"
+window_caption = "Project Billiard Py"
 fps_limit = 60
 
 # table settings
-table_margin = 40
-table_side_color = (200, 200, 0)
+table_margin = 32  #40
+table_side_color = (64, 31, 19)
 table_color = (0, 100, 0)
 separation_line_color = (200, 200, 200)
 hole_radius = 22
-middle_hole_offset = np.array([[-hole_radius * 2, hole_radius], [-hole_radius, 0],
-                               [hole_radius, 0], [hole_radius * 2, hole_radius]])
+middle_hole_offset = np.array([[-hole_radius * 1.5, hole_radius * 0.6], [-hole_radius * 1, 0],
+                               [hole_radius * 1, 0], [hole_radius * 1.5, hole_radius * 0.6]]) 
 side_hole_offset = np.array([
-    [- 2 * math.cos(math.radians(45)) * hole_radius - hole_radius, hole_radius],
-    [- math.cos(math.radians(45)) * hole_radius, -
-    math.cos(math.radians(45)) * hole_radius],
-    [math.cos(math.radians(45)) * hole_radius,
-     math.cos(math.radians(45)) * hole_radius],
-    [- hole_radius, 2 * math.cos(math.radians(45)) * hole_radius + hole_radius]
+    [- 1.5 * math.cos(math.radians(45)) * hole_radius - hole_radius * 0.6, hole_radius * 0.6],
+    [- 1 * math.cos(math.radians(45)) * hole_radius, -
+    1 * math.cos(math.radians(45)) * hole_radius],
+    [1 * math.cos(math.radians(45)) * hole_radius,
+     1 * math.cos(math.radians(45)) * hole_radius],
+    [- hole_radius * 0.6, 1.5 * math.cos(math.radians(45)) * hole_radius + hole_radius * 0.6]
 ])
 
 # cue settings
-player1_cue_color = (200, 100, 0)
-player2_cue_color = (0, 100, 200)
+player1_cue_color = (130, 65, 0)
+player2_cue_color = (200, 100, 0)
 cue_hit_power = 3
 cue_length = 250
 cue_thickness = 4
@@ -61,20 +61,20 @@ speed_angle_threshold = 0.09
 visible_angle_threshold = 0.05
 ball_colors = [
     (255, 255, 255),
-    (0, 200, 200),
-    (0, 0, 200),
-    (150, 0, 0),
-    (200, 0, 200),
-    (200, 0, 0),
-    (50, 0, 0),
+    (220, 220, 0),
+    (0, 0, 150),
+    (220, 0, 0),
+    (125, 35, 200),
+    (255, 150, 0),
+    (0, 150, 0),
     (100, 0, 0),
     (0, 0, 0),
-    (0, 200, 200),
-    (0, 0, 200),
-    (150, 0, 0),
-    (200, 0, 200),
-    (200, 0, 0),
-    (50, 0, 0),
+    (220, 220, 0),
+    (0, 0, 150),
+    (220, 0, 0),
+    (125, 35, 200),
+    (225, 150, 0),
+    (0, 150, 0),
     (100, 0, 0)
 ]
 ball_stripe_thickness = 5
