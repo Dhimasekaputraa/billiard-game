@@ -33,12 +33,12 @@ hole_radius = 22
 middle_hole_offset = np.array([[-hole_radius * 1.5, hole_radius * 0.6], [-hole_radius * 1, 0],
                                [hole_radius * 1, 0], [hole_radius * 1.5, hole_radius * 0.6]]) 
 side_hole_offset = np.array([
-    [- 1.5 * math.cos(math.radians(45)) * hole_radius - hole_radius * 0.6, hole_radius * 0.6],
+    [- 2 * math.cos(math.radians(45)) * hole_radius - hole_radius * 0.6, hole_radius * 0.6],
     [- 1 * math.cos(math.radians(45)) * hole_radius, -
     1 * math.cos(math.radians(45)) * hole_radius],
     [1 * math.cos(math.radians(45)) * hole_radius,
      1 * math.cos(math.radians(45)) * hole_radius],
-    [- hole_radius * 0.6, 1.5 * math.cos(math.radians(45)) * hole_radius + hole_radius * 0.6]
+    [- hole_radius * 0.6, 2 * math.cos(math.radians(45)) * hole_radius + hole_radius * 0.6]
 ])
 
 # cue settings
@@ -95,7 +95,22 @@ table_coeff_of_restitution = 0.9
 player1_target_text = 'P1 balls - '
 player2_target_text = 'P2 balls - '
 target_ball_spacing = 3
-player1_turn_label = ""
-player2_turn_label = ""
-penalty_indication_text = " "
+player1_turn_label = "Player 1 turn"
+player2_turn_label = "Player 2 turn"
+penalty_indication_text = "Click on the ball to move it "
 game_over_label_font_size = 40
+
+#menu config
+menu_title_text = "BILLIARD GAME"
+menu_title_font_size = 60
+menu_option_font_size = 40
+menu_text_color = (255, 255, 255)
+menu_text_selected_color = (100, 200, 100)
+menu_margin = 32
+menu_spacing = np.array([10, 10])
+
+#menu buttons
+menu_buttons = ["Play Single Player", "Play Multiplayer", "Exit"]
+play_single_button = 1
+play_multi_button = 2
+exit_button = 3
