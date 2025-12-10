@@ -123,6 +123,7 @@ class GameState:
         if update:
             pygame.display.flip()
         self.mark_one_frame()
+        self.mark_one_frame()
 
     def all_not_moving(self):
         return_value = True
