@@ -62,6 +62,7 @@ class TableColoring(pygame.sprite.Sprite):
     def update(self, game_state):
         self.redraw()
         self.generate_top_left_label(game_state)
+        self.generate_top_right_label(game_state)
         self.generate_target_balls(game_state)
 
     def generate_target_balls(self, game_state):
@@ -113,3 +114,21 @@ class TableColoring(pygame.sprite.Sprite):
         text_pos = [config.table_margin + config.hole_radius * 3,
                     config.table_margin - self.font.size(top_left_text)[1] / 2]
         self.image.blit(top_left_rendered_text, text_pos)
+
+    def generate_top_right_label(self, game_state):
+        # generates the top right label (mode game: practice atau versus)
+        if game_state.game_mode == "single":
+            mode_text = "PRACTICE MODE"
+            text_color = (255, 200, 0)  
+        elif game_state.game_mode == "multiplayer":
+            mode_text = "VERSUS MODE"
+            text_color = (255, 200, 0) 
+        else:
+            return
+        
+        mode_rendered_text = self.font.render(mode_text, False, text_color)
+        text_size = self.font.size(mode_text)
+        # Posisi di sudut kanan atas dengan margin
+        text_pos = [config.resolution[0] - config.table_margin - config.hole_radius * 3 - text_size[0],
+                    config.table_margin - text_size[1] / 2]
+        self.image.blit(mode_rendered_text, text_pos)

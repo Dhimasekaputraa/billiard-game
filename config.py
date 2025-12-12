@@ -97,7 +97,7 @@ player2_target_text = 'P2 balls - '
 target_ball_spacing = 3
 player1_turn_label = "Player 1 turn"
 player2_turn_label = "Player 2 turn"
-penalty_indication_text = "Click on the ball to move it "
+penalty_indication_text = " (Click on the ball to move it)"
 game_over_label_font_size = 40
 
 #menu config
