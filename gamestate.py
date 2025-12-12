@@ -35,6 +35,8 @@ class GameState:
         self.potted = []
         self.balls = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.OrderedUpdates()
+        self.turn_number = 0  # Inisialisasi turn_number
+        self.breakshot_performed = False  # Inisialisasi breakshot_performed
 
     def fps(self):
         return self.fps_clock.get_fps()
@@ -111,9 +113,14 @@ class GameState:
         self.is_game_over = False
         self.potting_8ball = {Player.Player1: False, Player.Player2: False}
         self.table_sides = []
+        self.white_ball_behind_line = True  # Flag untuk single player mode
+        self.breakshot_performed = False  # Flag untuk melacak apakah breakshot sudah dilakukan
 
     def is_behind_line_break(self):
         # 1st break should be made from behind the separation line on the table
+        # Untuk single player, gunakan flag white_ball_behind_line
+        if self.game_mode == "single":
+            return self.white_ball_behind_line
         return self.turn_number == 0
 
     def redraw_all(self, update=True):
@@ -168,23 +175,67 @@ class GameState:
         self.all_sprites.add(self.holes)
         graphics.add_separation_line(self.canvas)
 
+    def check_single_player_complete(self):
+        """Check apakah semua bola (kecuali white ball) sudah masuk di single player mode"""
+        if self.game_mode == "single":
+            # Hitung bola yang tersisa (tidak termasuk white ball)
+            remaining_balls = [b for b in self.balls if b.number != 0]
+            if len(remaining_balls) == 0:
+                # Semua bola sudah masuk
+                self.practice_complete()
+                return True
+        return False
+    
+    def practice_complete(self):
+        """Tampilkan layar practice complete"""
+        font = config.get_default_font(config.game_over_label_font_size)
+        text = "PRACTICE COMPLETE!"
+        rendered_text = font.render(text, False, (255, 255, 255))
+        self.canvas.surface.blit(rendered_text, (config.resolution - font.size(text)) / 2)
+        pygame.display.flip()
+        pygame.event.clear()
+        paused = True
+        while paused:
+            event = pygame.event.wait()
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                paused = False
+        self.is_game_over = True
     
     def check_potted(self):
-        self.can_move_white_ball = False
-        if 0 in self.potted:
-            self.create_white_ball()
-            self.cue.target_ball = self.white_ball
-            self.potted.remove(0)
-            # Hanya panggil turn_over di multiplayer mode
-            if self.game_mode == "multiplayer":
+        if self.game_mode == "single":
+            # Mode single player - bisa memindahkan white ball pada breakshot atau jika masuk ke lubang
+            if 0 in self.potted:
+                self.create_white_ball()
+                self.cue.target_ball = self.white_ball
+                self.potted.remove(0)
+                # Bola putih masuk, izinkan pemain untuk memindahkannya
+                self.can_move_white_ball = True
+                # Setelah bola putih potted, ia bisa dipindahkan ke seluruh area (tidak behind line)
+                self.white_ball_behind_line = False
+            elif self.turn_number == 0 and not self.breakshot_performed:
+                # Breakshot - izinkan pemain untuk memindahkan bola putih di belakang garis
+                self.can_move_white_ball = True
+                self.white_ball_behind_line = True
+            else:
+                # Jika bola putih tidak masuk dan bukan breakshot, jangan izinkan pemindahan
+                self.can_move_white_ball = False
+            
+            # Periksa apakah semua bola sudah masuk
+            self.check_single_player_complete()
+        else:
+            # Mode multiplayer
+            self.can_move_white_ball = False
+            if 0 in self.potted:
+                self.create_white_ball()
+                self.cue.target_ball = self.white_ball
+                self.potted.remove(0)
                 self.turn_over(True)
-        if 8 in self.potted:
-            # Hanya ada game over di multiplayer mode
-            if self.game_mode == "multiplayer":
-                if self.potting_8ball[self.current_player]:
-                    self.game_over(self.current_player == Player.Player1)
-                else:
-                    self.game_over(self.current_player != Player.Player1)
+            if 8 in self.potted:
+                if self.ball_assignment is not None:
+                    if self.potting_8ball[self.current_player]:
+                        self.game_over(self.current_player == Player.Player1)
+                    else:
+                        self.game_over(self.current_player != Player.Player1)
 
     def check_remaining(self):
         stripes_remaining = False
@@ -205,10 +256,18 @@ class GameState:
             self.white_ball_1st_hit_type = ball_combination[1].ball_type
         else:
             self.white_ball_1st_hit_type = ball_combination[0].ball_type
+        
+        # Tandai bahwa breakshot sudah dilakukan
+        if self.turn_number == 0:
+            self.breakshot_performed = True
 
     def check_pool_rules(self):
         self.check_potted()
-
+        
+        # Check apakah practice complete di single player
+        if self.game_mode == "single":
+            self.check_single_player_complete()
+        
         if self.game_mode == "multiplayer":
             if self.ball_assignment is not None:
                 self.check_remaining()
