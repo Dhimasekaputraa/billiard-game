@@ -97,7 +97,7 @@ player2_target_text = 'P2 balls - '
 target_ball_spacing = 3
 player1_turn_label = "Player 1 turn"
 player2_turn_label = "Player 2 turn"
-penalty_indication_text = "Click on the ball to move it "
+penalty_indication_text = " (Click on the ball to move it) "
 game_over_label_font_size = 40
 
 #menu config
@@ -110,7 +110,19 @@ menu_margin = 32
 menu_spacing = np.array([10, 10])
 
 #menu buttons
-menu_buttons = ["Play Single Player", "Play Multiplayer", "Exit"]
+menu_buttons = ["Practice", "Versus", "Exit"]
 play_single_button = 1
 play_multi_button = 2
 exit_button = 3
+menu_button_color = (50, 150, 50) 
+
+# pause menu settings
+pause_button_size = 40
+pause_button_padding = 10
+pause_menu_title = "PAUSED"
+pause_menu_buttons = ["Continue", "Restart", "Exit"]
+pause_continue_button = 1
+pause_restart_button = 2
+pause_exit_button = 3
+pause_menu_button_color = (50, 150, 50)
+pause_menu_button_hover_color = (100, 200, 100)
