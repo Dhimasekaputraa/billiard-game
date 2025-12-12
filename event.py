@@ -15,6 +15,8 @@ def set_allowed_events():
 def events():
     closed = False
     quit = False
+    pause = False
+    resume = False
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -22,8 +24,14 @@ def events():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 quit = True
+            if event.key == pygame.K_p:
+                pause = True
+            if event.key == pygame.K_RETURN:
+                resume = True
 
     return {"quit_to_main_menu": quit,
             "closed": closed,
             "clicked": pygame.mouse.get_pressed()[0],
-            "mouse_pos": np.array(pygame.mouse.get_pos())}
+            "mouse_pos": np.array(pygame.mouse.get_pos()),
+            "pause": pause,
+            "resume": resume}

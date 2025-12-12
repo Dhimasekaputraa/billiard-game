@@ -98,3 +98,45 @@ def draw_rects(button_size, buttons, game_state, text_starting_place, emit=list(
                                              config.menu_spacing * 2)), 1)
 
 
+def draw_pause_screen(game_state):
+    """
+    Menampilkan pause screen yang sederhana.
+    Pemain dapat menekan ENTER untuk melanjutkan atau ESC untuk kembali ke menu.
+    """
+    font = config.get_default_font(50)
+    small_font = config.get_default_font(30)
+    
+    # Overlay semi-transparent
+    overlay = pygame.Surface(config.resolution)
+    overlay.set_alpha(128)
+    overlay.fill((0, 0, 0))
+    game_state.canvas.surface.blit(overlay, (0, 0))
+    
+    # Render text pause
+    pause_text = font.render("GAME PAUSED", False, (255, 255, 255))
+    pause_rect = pause_text.get_rect(center=(config.resolution[0] / 2, config.resolution[1] / 2 - 50))
+    game_state.canvas.surface.blit(pause_text, pause_rect)
+    
+    # Render instruksi
+    resume_text = small_font.render("Press ENTER to Resume", False, (200, 200, 200))
+    resume_rect = resume_text.get_rect(center=(config.resolution[0] / 2, config.resolution[1] / 2 + 30))
+    game_state.canvas.surface.blit(resume_text, resume_rect)
+    
+    menu_text = small_font.render("Press ESC to Menu", False, (200, 200, 200))
+    menu_rect = menu_text.get_rect(center=(config.resolution[0] / 2, config.resolution[1] / 2 + 80))
+    game_state.canvas.surface.blit(menu_text, menu_rect)
+    
+    pygame.display.flip()
+    
+    # Loop pause hingga pemain tekan ENTER atau ESC
+    paused = True
+    while paused:
+        pause_events = event.events()
+        if pause_events["resume"]:
+            paused = False
+            return "resume"
+        elif pause_events["quit_to_main_menu"]:
+            return "exit"
+        elif pause_events["closed"]:
+            return "exit"
+

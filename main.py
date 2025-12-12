@@ -29,6 +29,16 @@ while not was_closed:
         
         while not (events["closed"] or game.is_game_over or events["quit_to_main_menu"]):
             events = event.events()
+            
+            # Cek pause game
+            if events["pause"]:
+                pause_result = graphics.draw_pause_screen(game)
+                if pause_result == "exit":
+                    events["quit_to_main_menu"] = True
+                    break
+                else:
+                    game.redraw_all()
+            
             collisions.resolve_all_collisions(game.balls, game.holes, game.table_sides)
             game.redraw_all()
 
@@ -39,6 +49,17 @@ while not was_closed:
                     (events["closed"] or events["quit_to_main_menu"]) or game.is_game_over) and game.all_not_moving():
                     game.redraw_all()
                     events = event.events()
+                    
+                    # Cek pause game saat bola berhenti
+                    if events["pause"]:
+                        pause_result = graphics.draw_pause_screen(game)
+                        if pause_result == "exit":
+                            events["quit_to_main_menu"] = True
+                            break
+                        else:
+                            game.redraw_all()
+                            continue
+                    
                     if game.cue.is_clicked(events):
                         game.cue.cue_is_active(game, events)
                     elif game.can_move_white_ball and game.white_ball.is_clicked(events):
