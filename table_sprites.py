@@ -63,6 +63,7 @@ class TableColoring(pygame.sprite.Sprite):
         self.redraw()
         self.generate_top_left_label(game_state)
         self.generate_top_right_label(game_state)
+        self.generate_power_bar(game_state)
         self.generate_target_balls(game_state)
 
     def generate_target_balls(self, game_state):
@@ -132,3 +133,51 @@ class TableColoring(pygame.sprite.Sprite):
         text_pos = [config.resolution[0] - config.table_margin - config.hole_radius * 3 - text_size[0],
                     config.table_margin - text_size[1] / 2]
         self.image.blit(mode_rendered_text, text_pos)
+
+    def generate_power_bar(self, game_state):
+        # Tampilkan power bar hanya jika cue stick terlihat dan sedang ditarik
+        if not game_state.cue.visible:
+            return
+        
+        # Hanya tampilkan power bar ketika displacement lebih besar dari ball_radius
+        if game_state.cue.displacement <= config.ball_radius:
+            return
+        
+        # Kalkulasi persentase kekuatan
+        # displacement range: ball_radius sampai cue_max_displacement
+        # actual power range: 0 sampai (cue_max_displacement - ball_radius - cue_safe_displacement)
+        current_displacement = game_state.cue.displacement
+        min_displacement = config.ball_radius
+        max_displacement = config.cue_max_displacement
+        
+        # Effective displacement untuk power (dikurangi safe displacement)
+        effective_current = max(0, current_displacement - min_displacement - config.cue_safe_displacement)
+        effective_max = max_displacement - min_displacement - config.cue_safe_displacement
+        
+        power_percentage = min(100, max(0, (effective_current / effective_max * 100))) if effective_max > 0 else 0
+        
+        # Dimensi power bar
+        bar_width = 30
+        bar_height = 200
+        bar_margin = 20
+        
+        # Posisi power bar di sebelah kanan tengah
+        bar_x = config.resolution[0] - config.table_margin - bar_width - bar_margin
+        bar_y = (config.resolution[1] - bar_height) / 2
+        
+        # Gambar latar belakang power bar (kotak kosong)
+        pygame.draw.rect(self.image, (100, 100, 100), 
+                        (bar_x, bar_y, bar_width, bar_height), 2)
+        
+        # Gambar fill power bar berdasarkan persentase (merah)
+        fill_height = int(bar_height * power_percentage / 100)
+        fill_y = bar_y + (bar_height - fill_height)
+        pygame.draw.rect(self.image, (255, 0, 0), 
+                        (bar_x, fill_y, bar_width, fill_height))
+        
+        # Gambar label persentase
+        percentage_font = config.get_default_font(12)
+        percentage_text = f"{int(power_percentage)}%"
+        percentage_rendered = percentage_font.render(percentage_text, False, (255, 255, 255))
+        text_pos = [bar_x - 25, bar_y + bar_height + 10]
+        self.image.blit(percentage_rendered, text_pos)
