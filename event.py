@@ -24,8 +24,10 @@ def events():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 quit = True
-            if event.key == pygame.K_p:
+            if (event.key == pygame.K_SPACE) and not pause:
                 pause = True
+            if (event.key == pygame.K_SPACE) and pause:
+                resume = True
             if event.key == pygame.K_RETURN:
                 resume = True
 

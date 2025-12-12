@@ -118,7 +118,7 @@ def draw_pause_screen(game_state):
     game_state.canvas.surface.blit(pause_text, pause_rect)
     
     # Render instruksi
-    resume_text = small_font.render("Press ENTER to Resume", False, (200, 200, 200))
+    resume_text = small_font.render("Press SPACE to Resume", False, (200, 200, 200))
     resume_rect = resume_text.get_rect(center=(config.resolution[0] / 2, config.resolution[1] / 2 + 30))
     game_state.canvas.surface.blit(resume_text, resume_rect)
     
