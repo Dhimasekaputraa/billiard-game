@@ -129,7 +129,7 @@ class TableColoring(pygame.sprite.Sprite):
         
         mode_rendered_text = self.font.render(mode_text, False, text_color)
         text_size = self.font.size(mode_text)
-        # Posisi di sudut kanan atas dengan margin
+
         text_pos = [config.resolution[0] - config.table_margin - config.hole_radius * 3 - text_size[0],
                     config.table_margin - text_size[1] / 2]
         self.image.blit(mode_rendered_text, text_pos)
@@ -139,7 +139,6 @@ class TableColoring(pygame.sprite.Sprite):
         if not game_state.cue.visible:
             return
         
-        # Hanya tampilkan power bar ketika displacement lebih besar dari ball_radius
         if game_state.cue.displacement <= config.ball_radius:
             return
         
@@ -165,11 +164,11 @@ class TableColoring(pygame.sprite.Sprite):
         bar_x = config.resolution[0] - config.table_margin - bar_width - bar_margin
         bar_y = (config.resolution[1] - bar_height) / 2
         
-        # Gambar latar belakang power bar (kotak kosong)
+        # Gambar latar belakang power bar
         pygame.draw.rect(self.image, (100, 100, 100), 
                         (bar_x, bar_y, bar_width, bar_height), 2)
         
-        # Gambar fill power bar berdasarkan persentase (merah)
+        # Gambar fill power bar berdasarkan persentase 
         fill_height = int(bar_height * power_percentage / 100)
         fill_y = bar_y + (bar_height - fill_height)
         pygame.draw.rect(self.image, (255, 0, 0), 
